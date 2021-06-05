@@ -3,9 +3,21 @@ name = "bevy-shadows"
 version = "0.1.0"
 authors = ["= <hjalte.nannestad@gmail.com>"]
 edition = "2018"
+license = "MIT"
+repository = "https://github.com/ChangeCaps/bevy-shadows"
+exclude = ["assets"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy = { git = "https://github.com/bevyengine/bevy", branch = "main" }
 bytemuck = "1.5.1"
+
+[dependencies.bevy]
+git = "https://github.com/bevyengine/bevy"
+rev = "4fed2ee8589975bc8725a5044f00d410f5db6753"
+default_features = false
+features = ["render"]
+
+[dev-dependencies.bevy]
+git = "https://github.com/bevyengine/bevy"
+rev = "4fed2ee8589975bc8725a5044f00d410f5db6753"

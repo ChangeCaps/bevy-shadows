@@ -1,19 +1,14 @@
-use std::char::MAX;
-
 use crate::shadow_pass_node::{Light, LightsNode};
 use crate::shadow_pass_node::{ShadowLightsBindNode, ShadowPassNode};
-use bevy::asset::AssetLoader;
-use bevy::pbr::render_graph::MAX_DIRECTIONAL_LIGHTS;
+use bevy::pbr::render_graph::{MAX_DIRECTIONAL_LIGHTS, PBR_PIPELINE_HANDLE};
 use bevy::prelude::*;
 use bevy::reflect::TypeUuid;
 use bevy::render::camera::CameraProjection;
 use bevy::render::camera::OrthographicProjection;
 use bevy::render::pipeline::PipelineDescriptor;
-use bevy::render::renderer::{RenderResourceBinding, RenderResourceBindings};
 use bevy::render::shader::{ShaderStage, ShaderStages};
 use bevy::render::texture::TextureDescriptor;
 use bevy::render::{
-    pipeline::RenderPipeline,
     render_graph::{base, RenderGraph, TextureNode},
     texture::{Extent3d, SamplerDescriptor, TextureDimension, TextureFormat, TextureUsage},
 };
@@ -92,18 +87,18 @@ pub(crate) fn add_render_graph(shadow_plugin: &crate::ShadowPlugin, app: &mut Ap
         .unwrap();
 
     pipelines.set_untracked(SHADOW_PIPELINE, shadow_pipeline);
-    pipelines.set_untracked(SHADOW_PBR_PIPELINE, shadow_pbr_pipeline);
 
-    let mut binding = app
-        .world_mut()
-        .get_resource_mut::<RenderResourceBindings>()
-        .unwrap();
+    if shadow_plugin.replace_pbr_pipeline {
+        pipelines.set_untracked(PBR_PIPELINE_HANDLE, shadow_pbr_pipeline);
+    } else {
+        pipelines.set_untracked(SHADOW_PBR_PIPELINE, shadow_pbr_pipeline);
+    }
 
     let mut render_graph = app.world_mut().get_resource_mut::<RenderGraph>().unwrap();
 
     let extent = Extent3d::new(
-        shadow_plugin.direction_light_size,
-        shadow_plugin.direction_light_size,
+        shadow_plugin.directional_light_resolution,
+        shadow_plugin.directional_light_resolution,
         MAX_DIRECTIONAL_LIGHTS as u32,
     );
 
@@ -116,7 +111,7 @@ pub(crate) fn add_render_graph(shadow_plugin: &crate::ShadowPlugin, app: &mut Ap
         SHADOW_PASS_NODE,
         ShadowPassNode::new(
             MAX_DIRECTIONAL_LIGHTS as u32,
-            shadow_plugin.direction_light_size,
+            shadow_plugin.directional_light_resolution,
         ),
     );
 

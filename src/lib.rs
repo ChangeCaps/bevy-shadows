@@ -6,18 +6,23 @@ use shadow_pass_node::ShadowLights;
 
 pub mod prelude {
     pub use crate::render_graph::{DIRECTIONAL_LIGHT_DEPTH_HANDLE, SHADOW_PBR_PIPELINE};
-    pub use crate::shadow_pass_node::{Light, ShadowCaster, ShadowLight};
+    pub use crate::shadow_pass_node::Shadowless;
     pub use crate::ShadowPlugin;
 }
 
 pub struct ShadowPlugin {
-    pub direction_light_size: u32,
+    /// Resolution of directional light shadow maps.
+    pub directional_light_resolution: u32,
+    /// If true, replaces the default pbr pipeline.
+    /// If false use [`prelude::SHADOW_PBR_PIPELINE`].
+    pub replace_pbr_pipeline: bool,
 }
 
 impl Default for ShadowPlugin {
     fn default() -> Self {
         Self {
-            direction_light_size: 4096,
+            directional_light_resolution: 4096,
+            replace_pbr_pipeline: true,
         }
     }
 }

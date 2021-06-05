@@ -1,18 +1,17 @@
 use crate::{prelude::DIRECTIONAL_LIGHT_DEPTH_HANDLE, render_graph::SHADOW_PIPELINE};
 use bevy::{
     core::bytes_of,
-    ecs::{query::WorldQuery, system::BoxedSystem, world::World},
-    pbr::render_graph::{lights_node_system, MAX_DIRECTIONAL_LIGHTS},
+    ecs::{system::BoxedSystem, world::World},
+    pbr::render_graph::{MAX_DIRECTIONAL_LIGHTS},
     prelude::*,
     prelude::{QueryState, Res},
     render::{
-        draw::{self, DrawContext, RenderCommand},
+        draw::{DrawContext, RenderCommand},
         mesh::{Indices, INDEX_BUFFER_ASSET_INDEX, VERTEX_ATTRIBUTE_BUFFER_ID},
         pass::{Operations, PassDescriptor, RenderPassDepthStencilAttachment, TextureAttachment},
         pipeline::{PipelineDescriptor, RenderPipeline},
         render_graph::{
-            base, CommandQueue, Node, RenderGraph, ResourceSlotInfo, ResourceSlots, SystemNode,
-            TextureNode,
+            CommandQueue, Node, ResourceSlotInfo, ResourceSlots, SystemNode,
         },
         renderer::{
             BufferId, BufferInfo, BufferMapMode, BufferUsage, RenderContext, RenderResourceBinding,
@@ -20,7 +19,7 @@ use bevy::{
             TextureId,
         },
         texture::{
-            Extent3d, SamplerDescriptor, TextureDescriptor, TextureDimension, TextureFormat,
+            Extent3d, TextureDescriptor, TextureDimension, TextureFormat,
             TextureUsage, SAMPLER_ASSET_INDEX, TEXTURE_ASSET_INDEX,
         },
     },
@@ -47,8 +46,8 @@ pub(crate) fn shadow_lights_remove_system<L: Light>(
     }
 }
 
-#[derive(Default)]
-pub struct ShadowCaster;
+#[derive(Default, Clone, Copy)]
+pub struct Shadowless;
 
 pub trait Light: Send + Sync + 'static {
     fn proj_matrix(&self) -> Mat4;
@@ -507,7 +506,7 @@ fn shadow_pass_system(
     mut lights: ResMut<ShadowLights>,
     mut render_resource_bindings: ResMut<RenderResourceBindings>,
     meshes: Res<Assets<Mesh>>,
-    mut query: Query<(&Handle<Mesh>, &mut RenderPipelines), With<ShadowCaster>>,
+    mut query: Query<(&Handle<Mesh>, &mut RenderPipelines), Without<Shadowless>>,
 ) {
     for light in lights.lights.values_mut() {
         light.draw.render_commands.clear();
