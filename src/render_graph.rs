@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use bevy::reflect::TypeUuid;
 use bevy::render::camera::CameraProjection;
 use bevy::render::camera::OrthographicProjection;
-use bevy::render::pipeline::PipelineDescriptor;
+use bevy::render::pipeline::{Face, PipelineDescriptor, PrimitiveState};
 use bevy::render::shader::{ShaderStage, ShaderStages};
 use bevy::render::texture::TextureDescriptor;
 use bevy::render::{
@@ -61,6 +61,10 @@ pub(crate) fn add_render_graph(shadow_plugin: &crate::ShadowPlugin, app: &mut Ap
 
     let shadow_pipeline = PipelineDescriptor {
         color_target_states: vec![],
+        primitive: PrimitiveState {
+            cull_mode: Some(Face::Front),
+            ..Default::default()
+        },
         ..PipelineDescriptor::default_config(ShaderStages {
             vertex,
             fragment: None,
