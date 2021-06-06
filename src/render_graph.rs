@@ -18,15 +18,15 @@ impl Light for DirectionalLight {
         let dir = self.get_direction().normalize();
         let rot = Quat::from_rotation_arc(-Vec3::Z, dir);
 
-        let view = Mat4::from_rotation_translation(rot, -dir * 500.0);
+        let view = Mat4::from_quat(rot);
 
         OrthographicProjection {
             left: -25.0,
             right: 25.0,
             bottom: -25.0,
             top: 25.0,
-            far: 1000.0,
-            near: 0.0,
+            far: 500.0,
+            near: -500.0,
             ..Default::default()
         }
         .get_projection_matrix()
@@ -111,6 +111,9 @@ pub(crate) fn add_render_graph(shadow_plugin: &crate::ShadowPlugin, app: &mut Ap
     let extent = Extent3d::new(
         shadow_plugin.directional_light_resolution,
         shadow_plugin.directional_light_resolution,
+        // this is wasteful if MAX_DIRECTIONAL_LIGHTS is 1
+        // but it will insure that the texture will always be
+        // interpreted as a D2Array texture rather than a D2
         MAX_DIRECTIONAL_LIGHTS as u32,
     );
 
@@ -131,7 +134,7 @@ pub(crate) fn add_render_graph(shadow_plugin: &crate::ShadowPlugin, app: &mut Ap
         DIRECTIONAL_LIGHT_DEPTH,
         TextureNode::new(
             TextureDescriptor {
-                size: extent.clone(),
+                size: extent,
                 sample_count: 1,
                 mip_level_count: 1,
                 dimension: TextureDimension::D2,

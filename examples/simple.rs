@@ -33,7 +33,7 @@ fn setup(
             32000.0,
             Vec3::new(1.0, -1.0, 0.0),
         ))
-        .insert(Transform::identity())
+        .insert(Transform::from_xyz(-10.0, 10.0, 10.0))
         .insert(GlobalTransform::identity());
 
     commands.spawn_bundle(PbrBundle {
