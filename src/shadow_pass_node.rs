@@ -233,7 +233,7 @@ impl<L: Light> Node for LightsNode<L> {
                         if let Ok((light, global_transform)) = query_state.get(world, *entity) {
                             let proj = light.proj_matrix();
                             let view = global_transform.compute_matrix();
-                            let view_proj = proj * view;
+                            let view_proj = proj * view.inverse();
 
                             shadow_light.pos = global_transform.translation;
                             shadow_light.view_proj = view_proj;

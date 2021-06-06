@@ -16,9 +16,7 @@ use bevy::render::{
 impl Light for DirectionalLight {
     fn proj_matrix(&self) -> Mat4 {
         let dir = self.get_direction().normalize();
-        let rot = Quat::from_rotation_arc(-Vec3::Z, dir);
-
-        let view = Mat4::from_quat(rot);
+        let rot = Quat::from_rotation_arc(Vec3::Z, dir);
 
         OrthographicProjection {
             left: -25.0,
@@ -30,7 +28,7 @@ impl Light for DirectionalLight {
             ..Default::default()
         }
         .get_projection_matrix()
-            * view.inverse()
+            * Mat4::from_quat(rot)
     }
 }
 

@@ -26,6 +26,9 @@ fn setup(
         ..Default::default()
     });
 
+    let mut transform = Transform::from_xyz(0.0, 0.0, 0.0);
+    transform.scale = Vec3::splat(0.2);
+
     commands
         .spawn()
         .insert(DirectionalLight::new(
@@ -33,7 +36,7 @@ fn setup(
             32000.0,
             Vec3::new(1.0, -1.0, 0.0),
         ))
-        .insert(Transform::from_xyz(-10.0, 10.0, 10.0))
+        .insert(transform)
         .insert(GlobalTransform::identity());
 
     commands.spawn_bundle(PbrBundle {
