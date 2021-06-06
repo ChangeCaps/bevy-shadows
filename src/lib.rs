@@ -16,6 +16,11 @@ pub struct ShadowPlugin {
     /// If true, replaces the default pbr pipeline.
     /// If false use [`prelude::SHADOW_PBR_PIPELINE`].
     pub replace_pbr_pipeline: bool,
+    /// If false, the shadow pbr pipeline won't creates.
+    /// Disable if you want to implement your own.
+    pub create_pbr_pipeline: bool,
+    /// If false then the shadow pass won't be connected to main pass.
+    pub connect_to_main_pass: bool,
 }
 
 impl Default for ShadowPlugin {
@@ -23,6 +28,8 @@ impl Default for ShadowPlugin {
         Self {
             directional_light_resolution: 4096,
             replace_pbr_pipeline: true,
+            create_pbr_pipeline: true,
+            connect_to_main_pass: true,
         }
     }
 }

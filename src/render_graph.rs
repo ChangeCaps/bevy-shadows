@@ -71,19 +71,33 @@ pub(crate) fn add_render_graph(shadow_plugin: &crate::ShadowPlugin, app: &mut Ap
         })
     };
 
-    let vertex = shaders.add(Shader::from_glsl(
-        ShaderStage::Vertex,
-        include_str!("shaders/shadow_pbr.vert"),
-    ));
-    let fragment = shaders.add(Shader::from_glsl(
-        ShaderStage::Fragment,
-        include_str!("shaders/shadow_pbr.frag"),
-    ));
+    // only create pbr pipeline if desired
+    if shadow_plugin.create_pbr_pipeline {
+        let vertex = shaders.add(Shader::from_glsl(
+            ShaderStage::Vertex,
+            include_str!("shaders/shadow_pbr.vert"),
+        ));
+        let fragment = shaders.add(Shader::from_glsl(
+            ShaderStage::Fragment,
+            include_str!("shaders/shadow_pbr.frag"),
+        ));
 
-    let shadow_pbr_pipeline = PipelineDescriptor::default_config(ShaderStages {
-        vertex,
-        fragment: Some(fragment),
-    });
+        let shadow_pbr_pipeline = PipelineDescriptor::default_config(ShaderStages {
+            vertex,
+            fragment: Some(fragment),
+        });
+
+        let mut pipelines = app
+            .world_mut()
+            .get_resource_mut::<Assets<PipelineDescriptor>>()
+            .unwrap();
+
+        if shadow_plugin.replace_pbr_pipeline {
+            pipelines.set_untracked(PBR_PIPELINE_HANDLE, shadow_pbr_pipeline);
+        } else {
+            pipelines.set_untracked(SHADOW_PBR_PIPELINE, shadow_pbr_pipeline);
+        }
+    }
 
     let mut pipelines = app
         .world_mut()
@@ -91,12 +105,6 @@ pub(crate) fn add_render_graph(shadow_plugin: &crate::ShadowPlugin, app: &mut Ap
         .unwrap();
 
     pipelines.set_untracked(SHADOW_PIPELINE, shadow_pipeline);
-
-    if shadow_plugin.replace_pbr_pipeline {
-        pipelines.set_untracked(PBR_PIPELINE_HANDLE, shadow_pbr_pipeline);
-    } else {
-        pipelines.set_untracked(SHADOW_PBR_PIPELINE, shadow_pbr_pipeline);
-    }
 
     let mut render_graph = app.world_mut().get_resource_mut::<RenderGraph>().unwrap();
 
@@ -142,10 +150,6 @@ pub(crate) fn add_render_graph(shadow_plugin: &crate::ShadowPlugin, app: &mut Ap
     render_graph.add_system_node(SHADOW_LIGHTS_BIND_NODE, ShadowLightsBindNode::default());
 
     render_graph
-        .add_node_edge(SHADOW_LIGHTS_BIND_NODE, base::node::MAIN_PASS)
-        .unwrap();
-
-    render_graph
         .add_slot_edge(
             DIRECTIONAL_LIGHT_DEPTH,
             TextureNode::TEXTURE,
@@ -158,7 +162,12 @@ pub(crate) fn add_render_graph(shadow_plugin: &crate::ShadowPlugin, app: &mut Ap
         .add_node_edge(DIRECTIONAL_LIGHTS_NODE, SHADOW_PASS_NODE)
         .unwrap();
 
-    render_graph
-        .add_node_edge(SHADOW_PASS_NODE, base::node::MAIN_PASS)
-        .unwrap();
+    if shadow_plugin.connect_to_main_pass {
+        render_graph
+            .add_node_edge(SHADOW_LIGHTS_BIND_NODE, base::node::MAIN_PASS)
+            .unwrap();
+        render_graph
+            .add_node_edge(SHADOW_PASS_NODE, base::node::MAIN_PASS)
+            .unwrap();
+    }
 }
