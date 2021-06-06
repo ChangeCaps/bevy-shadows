@@ -16,7 +16,7 @@ pub struct ShadowPlugin {
     /// If true, replaces the default pbr pipeline.
     /// If false use [`prelude::SHADOW_PBR_PIPELINE`].
     pub replace_pbr_pipeline: bool,
-    /// If false, the shadow pbr pipeline won't creates.
+    /// If false, the shadow pbr pipeline won't be created.
     /// Disable if you want to implement your own.
     pub create_pbr_pipeline: bool,
     /// If false then the shadow pass won't be connected to main pass.
