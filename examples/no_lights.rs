@@ -1,3 +1,5 @@
+//! Example exists to make sure we don't panic when no directional lights are present.
+
 use bevy::prelude::*;
 use bevy_shadows::prelude::*;
 
@@ -25,16 +27,6 @@ fn setup(
             .looking_at(Vec3::ZERO, Vec3::Y),
         ..Default::default()
     });
-
-    commands
-        .spawn()
-        .insert(DirectionalLight::new(
-            Color::WHITE,
-            32000.0,
-            Vec3::new(1.0, -1.0, 0.0),
-        ))
-        .insert(Transform::identity())
-        .insert(GlobalTransform::identity());
 
     commands.spawn_bundle(PbrBundle {
         mesh: meshes.add(shape::Plane { size: 100.0 }.into()),

@@ -2,7 +2,7 @@ use crate::{prelude::DIRECTIONAL_LIGHT_DEPTH_HANDLE, render_graph::SHADOW_PIPELI
 use bevy::{
     core::bytes_of,
     ecs::{system::BoxedSystem, world::World},
-    pbr::render_graph::{MAX_DIRECTIONAL_LIGHTS},
+    pbr::render_graph::MAX_DIRECTIONAL_LIGHTS,
     prelude::*,
     prelude::{QueryState, Res},
     render::{
@@ -10,17 +10,15 @@ use bevy::{
         mesh::{Indices, INDEX_BUFFER_ASSET_INDEX, VERTEX_ATTRIBUTE_BUFFER_ID},
         pass::{Operations, PassDescriptor, RenderPassDepthStencilAttachment, TextureAttachment},
         pipeline::{PipelineDescriptor, RenderPipeline},
-        render_graph::{
-            CommandQueue, Node, ResourceSlotInfo, ResourceSlots, SystemNode,
-        },
+        render_graph::{CommandQueue, Node, ResourceSlotInfo, ResourceSlots, SystemNode},
         renderer::{
             BufferId, BufferInfo, BufferMapMode, BufferUsage, RenderContext, RenderResourceBinding,
             RenderResourceBindings, RenderResourceContext, RenderResourceId, RenderResourceType,
             TextureId,
         },
         texture::{
-            Extent3d, TextureDescriptor, TextureDimension, TextureFormat,
-            TextureUsage, SAMPLER_ASSET_INDEX, TEXTURE_ASSET_INDEX,
+            Extent3d, TextureDescriptor, TextureDimension, TextureFormat, TextureUsage,
+            SAMPLER_ASSET_INDEX, TEXTURE_ASSET_INDEX,
         },
     },
 };
@@ -182,23 +180,27 @@ fn shadow_lights_bind_system(
         light_buffer
     };
 
-    render_resource_context.write_mapped_buffer(
-        staging_buffer,
-        0..directional_size as u64,
-        &mut |data, _| {
-            data.copy_from_slice(cast_slice(&directional_lights));
-        },
-    );
+    if directional_lights.len() > 0 {
+        render_resource_context.write_mapped_buffer(
+            staging_buffer,
+            0..directional_size as u64,
+            &mut |data, _| {
+                data.copy_from_slice(cast_slice(&directional_lights));
+            },
+        );
+    }
 
     render_resource_context.unmap_buffer(staging_buffer);
 
-    state.command_queue.copy_buffer_to_buffer(
-        staging_buffer,
-        0,
-        light_buffer,
-        0,
-        directional_size as u64,
-    );
+    if directional_lights.len() > 0 {
+        state.command_queue.copy_buffer_to_buffer(
+            staging_buffer,
+            0,
+            light_buffer,
+            0,
+            directional_size as u64,
+        );
+    }
 
     render_resource_bindings.set(
         "ShadowLights",
