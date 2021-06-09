@@ -160,7 +160,7 @@ pub(crate) fn add_render_graph(shadow_plugin: &crate::ShadowPlugin, app: &mut Ap
         .unwrap();
 
     render_graph
-        .add_node_edge(DIRECTIONAL_LIGHTS_NODE, SHADOW_PASS_NODE)
+        .add_node_edge(base::node::MAIN_PASS, DIRECTIONAL_LIGHTS_NODE)
         .unwrap();
 
     if shadow_plugin.connect_to_main_pass {

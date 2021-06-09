@@ -177,6 +177,8 @@ fn shadow_lights_bind_system(
             buffer_usage: BufferUsage::UNIFORM | BufferUsage::COPY_DST,
         });
 
+        state.light_buffer = Some(light_buffer);
+
         light_buffer
     };
 
@@ -232,7 +234,11 @@ impl<L: Light> Node for LightsNode<L> {
                     for (entity, shadow_light) in &mut lights.lights {
                         if let Ok((light, global_transform)) = query_state.get(world, *entity) {
                             let proj = light.proj_matrix();
-                            let view = global_transform.compute_matrix();
+                            let view = Mat4::from_scale_rotation_translation(
+                                global_transform.scale,
+                                Quat::IDENTITY,
+                                global_transform.translation,
+                            );
                             let view_proj = proj * view.inverse();
 
                             shadow_light.pos = global_transform.translation;
