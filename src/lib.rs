@@ -9,6 +9,7 @@ pub mod prelude {
     pub use crate::render_graph::{DIRECTIONAL_LIGHT_DEPTH_HANDLE, SHADOW_PBR_PIPELINE};
     pub use crate::shadow_pass_node::Shadowless;
     pub use crate::ShadowPlugin;
+    pub use crate::directional_light::ShadowDirectionalLight;
 }
 
 pub struct ShadowPlugin {

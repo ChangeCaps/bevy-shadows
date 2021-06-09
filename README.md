@@ -20,7 +20,7 @@ pub struct ShadowPlugin {
     pub connect_to_main_pass: bool,
 }
 ```
-There is also a configuration type for every light.
+There is also a configuration component for every light, that can optionally be inserted.
 ```rust
 pub struct ShadowDirectionalLight {
     /// Size of the area covered by the light. 

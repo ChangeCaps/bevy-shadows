@@ -110,8 +110,12 @@ fn setup(
                     32000.0,
                     Vec3::new(1.0, -1.0, 0.0),
                 ))
-                .insert(Transform::from_scale(Vec3::splat(0.2)))
-                .insert(GlobalTransform::identity());
+                .insert(Transform::identity())
+                .insert(GlobalTransform::identity())
+                .insert(ShadowDirectionalLight {
+                    size: 10.0,
+                    ..Default::default()
+                });
         });
 
     commands.spawn_bundle(PbrBundle {

@@ -14,10 +14,10 @@ bytemuck = "1.5.1"
 
 [dependencies.bevy]
 git = "https://github.com/bevyengine/bevy"
-rev = "4fed2ee8589975bc8725a5044f00d410f5db6753"
+rev = "e549f143593e90197cb9bc39ab6fed355c8a6681"
 default_features = false
 features = ["render"]
 
 [dev-dependencies.bevy]
 git = "https://github.com/bevyengine/bevy"
-rev = "4fed2ee8589975bc8725a5044f00d410f5db6753"
+rev = "e549f143593e90197cb9bc39ab6fed355c8a6681"
