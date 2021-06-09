@@ -3,8 +3,6 @@ use crate::shadow_pass_node::{ShadowLightsBindNode, ShadowPassNode};
 use bevy::pbr::render_graph::{MAX_DIRECTIONAL_LIGHTS, PBR_PIPELINE_HANDLE};
 use bevy::prelude::*;
 use bevy::reflect::TypeUuid;
-use bevy::render::camera::CameraProjection;
-use bevy::render::camera::OrthographicProjection;
 use bevy::render::pipeline::{Face, PipelineDescriptor, PrimitiveState};
 use bevy::render::shader::{ShaderStage, ShaderStages};
 use bevy::render::texture::TextureDescriptor;
@@ -12,25 +10,6 @@ use bevy::render::{
     render_graph::{base, RenderGraph, TextureNode},
     texture::{Extent3d, SamplerDescriptor, TextureDimension, TextureFormat, TextureUsage},
 };
-
-impl Light for DirectionalLight {
-    fn proj_matrix(&self) -> Mat4 {
-        let dir = self.get_direction().normalize();
-        let rot = Quat::from_rotation_arc(Vec3::Z, dir);
-
-        OrthographicProjection {
-            left: -25.0,
-            right: 25.0,
-            bottom: -25.0,
-            top: 25.0,
-            far: 500.0,
-            near: -500.0,
-            ..Default::default()
-        }
-        .get_projection_matrix()
-            * Mat4::from_quat(rot)
-    }
-}
 
 pub const DIRECTIONAL_LIGHT_DEPTH_HANDLE: HandleUntyped =
     HandleUntyped::weak_from_u64(Texture::TYPE_UUID, 4328462394);

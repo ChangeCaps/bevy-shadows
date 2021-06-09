@@ -1,7 +1,7 @@
 use crate::{prelude::DIRECTIONAL_LIGHT_DEPTH_HANDLE, render_graph::SHADOW_PIPELINE};
 use bevy::{
     core::bytes_of,
-    ecs::{system::BoxedSystem, world::World},
+    ecs::{query::WorldQuery, system::BoxedSystem, world::World},
     pbr::render_graph::MAX_DIRECTIONAL_LIGHTS,
     prelude::*,
     prelude::{QueryState, Res},
@@ -48,7 +48,9 @@ pub(crate) fn shadow_lights_remove_system<L: Light>(
 pub struct Shadowless;
 
 pub trait Light: Send + Sync + 'static {
-    fn proj_matrix(&self) -> Mat4;
+    type Config: Send + Sync + 'static;
+
+    fn proj_matrix(&self, config: Option<&Self::Config>) -> Mat4;
 }
 
 #[derive(Default)]
@@ -214,10 +216,24 @@ fn shadow_lights_bind_system(
     );
 }
 
-#[derive(Default)]
 pub struct LightsNode<L: Light> {
-    query_state: Option<QueryState<(&'static L, &'static GlobalTransform)>>,
+    query_state: Option<
+        QueryState<(
+            &'static L,
+            &'static GlobalTransform,
+            Option<&'static L::Config>,
+        )>,
+    >,
     command_queue: CommandQueue,
+}
+
+impl<L: Light> Default for LightsNode<L> {
+    fn default() -> Self {
+        Self {
+            query_state: Default::default(),
+            command_queue: Default::default(),
+        }
+    }
 }
 
 impl<L: Light> Node for LightsNode<L> {
@@ -232,8 +248,10 @@ impl<L: Light> Node for LightsNode<L> {
             |world, render_resource_context: Mut<Box<dyn RenderResourceContext>>| {
                 world.resource_scope(|world, mut lights: Mut<ShadowLights>| {
                     for (entity, shadow_light) in &mut lights.lights {
-                        if let Ok((light, global_transform)) = query_state.get(world, *entity) {
-                            let proj = light.proj_matrix();
+                        if let Ok((light, global_transform, config)) =
+                            query_state.get(world, *entity)
+                        {
+                            let proj = light.proj_matrix(config);
                             let view = Mat4::from_scale_rotation_translation(
                                 global_transform.scale,
                                 Quat::IDENTITY,

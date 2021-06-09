@@ -1,7 +1,6 @@
 use bevy::{input::mouse::MouseMotion, prelude::*};
 use bevy_shadows::prelude::*;
 
-
 fn main() {
     App::build()
         .insert_resource(Msaa { samples: 8 })
@@ -76,12 +75,13 @@ fn camera_system(
     }
 }
 
-fn light_direction(
-    time: Res<Time>,
-    mut query: Query<&mut DirectionalLight>,
-) {
+fn light_direction(time: Res<Time>, mut query: Query<&mut DirectionalLight>) {
     for mut light in query.iter_mut() {
-        light.set_direction(Vec3::new(time.seconds_since_startup().sin() as f32, -1.0, 0.0));
+        light.set_direction(Vec3::new(
+            time.seconds_since_startup().sin() as f32,
+            -1.0,
+            0.0,
+        ));
     }
 }
 

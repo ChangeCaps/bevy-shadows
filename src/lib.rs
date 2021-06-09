@@ -1,3 +1,4 @@
+mod directional_light;
 mod render_graph;
 mod shadow_pass_node;
 
