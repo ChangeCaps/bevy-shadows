@@ -453,8 +453,8 @@ void main() {
             sampler2DArray(DirectionalLightTexture, DirectionalLightSampler), 
             vec3(uv, shadow_light.textureIndex)
         ).r;
-
-        if (p.z <= depth + 0.00015 || any(lessThan(uv, vec2(0.0))) || any(greaterThan(uv, vec2(1.0)))) {
+        float shadow_bias = max(0.00015 * (1.0 - dot(v_WorldNormal, DirectionalLights[i].direction.xyz)), 0.00001);
+        if (p.z - shadow_bias <= depth || any(lessThan(uv, vec2(0.0))) || any(greaterThan(uv, vec2(1.0)))) {
             light_accum += dir_light(DirectionalLights[i], roughness, NdotV, N, V, R, F0, diffuseColor);
         }
     }
