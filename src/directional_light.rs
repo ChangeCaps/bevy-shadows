@@ -26,9 +26,6 @@ impl Light for DirectionalLight {
     type Config = ShadowDirectionalLight;
 
     fn proj_matrix(&self, config: Option<&Self::Config>) -> Mat4 {
-        let dir = self.get_direction().normalize();
-        let rot = Quat::from_rotation_arc(Vec3::Z, dir);
-
         let d = config.map_or(25.0, |config| config.size / 2.0);
         let near = config.map_or(-500.0, |config| config.near);
         let far = config.map_or(500.0, |config| config.far);
@@ -43,6 +40,5 @@ impl Light for DirectionalLight {
             ..Default::default()
         }
         .get_projection_matrix()
-            * Mat4::from_quat(rot)
     }
 }
