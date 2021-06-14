@@ -253,12 +253,8 @@ impl<L: Light> Node for LightsNode<L> {
                             query_state.get(world, *entity)
                         {
                             let proj = light.proj_matrix(config);
-                            let view = Mat4::from_scale_rotation_translation(
-                                global_transform.scale,
-                                Quat::IDENTITY,
-                                global_transform.translation,
-                            );
-                            let view_proj = proj * view.inverse();
+                            let view = light.view_matrix();
+                            let view_proj = proj * view;
 
                             shadow_light.pos = global_transform.translation;
                             shadow_light.view_proj = view_proj;
