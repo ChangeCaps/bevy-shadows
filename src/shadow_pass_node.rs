@@ -51,6 +51,7 @@ pub trait Light: Send + Sync + 'static {
     type Config: Send + Sync + 'static;
 
     fn proj_matrix(&self, config: Option<&Self::Config>) -> Mat4;
+    fn view_matrix(&self) -> Mat4;
 }
 
 #[derive(Default)]

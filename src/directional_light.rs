@@ -41,4 +41,9 @@ impl Light for DirectionalLight {
         }
         .get_projection_matrix()
     }
+
+    fn view_matrix(&self) -> Mat4 {
+        let eye_position = -40.0 * self.get_direction();
+        Mat4::look_at_rh(eye_position, Vec3::ZERO, Vec3::Y)
+    }
 }
