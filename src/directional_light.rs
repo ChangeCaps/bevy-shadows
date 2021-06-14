@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use bevy::render::camera::{CameraProjection, OrthographicProjection};
 
 pub struct ShadowDirectionalLight {
-    /// Size of the area covered by the light. 
+    /// Size of the area covered by the light.
     /// Everything outside will be lit by default.
     pub size: f32,
     /// Near plane of projection.
