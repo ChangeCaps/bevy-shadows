@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use bevy::render::camera::{CameraProjection, OrthographicProjection};
 
 pub struct ShadowDirectionalLight {
-    /// Size of the area covered by the light. 
+    /// Size of the area covered by the light.
     /// Everything outside will be lit by default.
     pub size: f32,
     /// Near plane of projection.
@@ -26,9 +26,6 @@ impl Light for DirectionalLight {
     type Config = ShadowDirectionalLight;
 
     fn proj_matrix(&self, config: Option<&Self::Config>) -> Mat4 {
-        let dir = self.get_direction().normalize();
-        let rot = Quat::from_rotation_arc(Vec3::Z, dir);
-
         let d = config.map_or(25.0, |config| config.size / 2.0);
         let near = config.map_or(-500.0, |config| config.near);
         let far = config.map_or(500.0, |config| config.far);
@@ -43,6 +40,10 @@ impl Light for DirectionalLight {
             ..Default::default()
         }
         .get_projection_matrix()
-            * Mat4::from_quat(rot)
+    }
+
+    fn view_matrix(&self) -> Mat4 {
+        let eye_position = -40.0 * self.get_direction();
+        Mat4::look_at_rh(eye_position, Vec3::ZERO, Vec3::Y)
     }
 }
