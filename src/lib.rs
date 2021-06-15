@@ -37,7 +37,7 @@ impl Default for ShadowPlugin {
             replace_pbr_pipeline: true,
             create_pbr_pipeline: true,
             connect_to_main_pass: true,
-            automatic_projection_bounds: true,
+            automatic_projection_bounds: false,
         }
     }
 }
