@@ -7,10 +7,11 @@ license = "MIT"
 repository = "https://github.com/ChangeCaps/bevy-shadows"
 exclude = ["assets"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 bytemuck = "1.5.1"
+# NOTE: The following branch just uses the same bevy version as specified below
+# and will need to be updated in lock step
+bevy_mod_bounding = { git = "https://github.com/superdump/bevy_mod_bounding", branch = "bevy-shadows" }
 
 [dependencies.bevy]
 git = "https://github.com/bevyengine/bevy"

@@ -1,7 +1,7 @@
 use crate::{prelude::DIRECTIONAL_LIGHT_DEPTH_HANDLE, render_graph::SHADOW_PIPELINE};
 use bevy::{
     core::bytes_of,
-    ecs::{query::WorldQuery, system::BoxedSystem, world::World},
+    ecs::{system::BoxedSystem, world::World},
     pbr::render_graph::MAX_DIRECTIONAL_LIGHTS,
     prelude::*,
     prelude::{QueryState, Res},

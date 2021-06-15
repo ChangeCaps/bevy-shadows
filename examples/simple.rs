@@ -101,6 +101,7 @@ fn setup(
         })
         .insert(CameraState::default())
         .with_children(|parent| {
+            let half_size = 5.0;
             parent
                 .spawn()
                 .insert(DirectionalLight::new(
@@ -111,15 +112,20 @@ fn setup(
                 .insert(Transform::identity())
                 .insert(GlobalTransform::identity())
                 .insert(ShadowDirectionalLight {
-                    size: 10.0,
+                    left: -half_size,
+                    right: half_size,
+                    bottom: -half_size,
+                    top: half_size,
                     ..Default::default()
                 });
         });
 
-    commands.spawn_bundle(PbrBundle {
-        mesh: meshes.add(shape::Plane { size: 100.0 }.into()),
-        transform: Transform::from_translation(Vec3::new(0.0, -0.5, 0.0)),
-        material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
-        ..Default::default()
-    });
+    commands
+        .spawn_bundle(PbrBundle {
+            mesh: meshes.add(shape::Plane { size: 100.0 }.into()),
+            transform: Transform::from_translation(Vec3::new(0.0, -0.5, 0.0)),
+            material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
+            ..Default::default()
+        })
+        .insert(Shadowless);
 }
