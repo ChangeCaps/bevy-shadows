@@ -120,10 +120,12 @@ fn setup(
                 });
         });
 
-    commands.spawn_bundle(PbrBundle {
-        mesh: meshes.add(shape::Plane { size: 100.0 }.into()),
-        transform: Transform::from_translation(Vec3::new(0.0, -0.5, 0.0)),
-        material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
-        ..Default::default()
-    });
+    commands
+        .spawn_bundle(PbrBundle {
+            mesh: meshes.add(shape::Plane { size: 100.0 }.into()),
+            transform: Transform::from_translation(Vec3::new(0.0, -0.5, 0.0)),
+            material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
+            ..Default::default()
+        })
+        .insert(Shadowless);
 }
