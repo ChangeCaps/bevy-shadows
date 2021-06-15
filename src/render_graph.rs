@@ -1,4 +1,4 @@
-use crate::shadow_pass_node::{Light, LightsNode};
+use crate::shadow_pass_node::LightsNode;
 use crate::shadow_pass_node::{ShadowLightsBindNode, ShadowPassNode};
 use bevy::pbr::render_graph::{MAX_DIRECTIONAL_LIGHTS, PBR_PIPELINE_HANDLE};
 use bevy::prelude::*;
