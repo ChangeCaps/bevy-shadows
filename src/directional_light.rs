@@ -5,6 +5,9 @@ use bevy::render::pipeline::PrimitiveTopology;
 use bevy_mod_bounding::{sphere, Bounded};
 
 const HALF_SIZE: f32 = 25.0;
+const MIN_BIAS: f32 = 0.00001;
+const MAX_BIAS: f32 = 0.00015;
+
 pub struct ShadowDirectionalLight {
     /// Left plane of projection.
     pub left: f32,
@@ -18,6 +21,8 @@ pub struct ShadowDirectionalLight {
     pub near: f32,
     /// Far plane of projection.
     pub far: f32,
+    /// Min/max bias used when comparing the fragment's light space depth with the shadow map depth.
+    pub bias: Vec2,
 }
 
 impl Default for ShadowDirectionalLight {
@@ -29,6 +34,7 @@ impl Default for ShadowDirectionalLight {
             top: HALF_SIZE,
             near: -20.0 * HALF_SIZE,
             far: 20.0 * HALF_SIZE,
+            bias: Vec2::new(MIN_BIAS, MAX_BIAS),
         }
     }
 }
@@ -59,6 +65,10 @@ impl Light for DirectionalLight {
     fn view_matrix(&self) -> Mat4 {
         let eye_position = -40.0 * self.get_direction();
         Mat4::look_at_rh(eye_position, Vec3::ZERO, Vec3::Y)
+    }
+
+    fn shadow_bias_min_max(&self, config: Option<&Self::Config>) -> Vec2 {
+        config.map_or(Vec2::new(MIN_BIAS, MAX_BIAS), |config| config.bias)
     }
 }
 
