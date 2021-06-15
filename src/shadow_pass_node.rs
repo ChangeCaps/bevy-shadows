@@ -52,6 +52,7 @@ pub trait Light: Send + Sync + 'static {
 
     fn proj_matrix(&self, config: Option<&Self::Config>) -> Mat4;
     fn view_matrix(&self) -> Mat4;
+    fn shadow_bias_min_max(&self, config: Option<&Self::Config>) -> Vec2;
 }
 
 #[derive(Default)]
@@ -61,6 +62,7 @@ pub struct ShadowLight {
     texture_index: usize,
     pos: Vec3,
     view_proj: Mat4,
+    shadow_bias_min_max: Vec2,
     pub bindings: RenderResourceBindings,
 }
 
@@ -80,10 +82,12 @@ impl ShadowLights {
 }
 
 #[repr(C)]
-#[derive(Debug, Clone, Copy, Pod, Zeroable)]
+#[derive(Debug, Default, Clone, Copy, Pod, Zeroable)]
 pub struct DirectionalLightUniform {
     pub texture_index: [u32; 4],
     pub pos: [f32; 4],
+    pub shadow_bias_min_max: [f32; 2],
+    _padding: [f32; 2],
     pub view_proj: [[f32; 4]; 4],
 }
 
@@ -148,7 +152,9 @@ fn shadow_lights_bind_system(
         let directional_light = DirectionalLightUniform {
             texture_index: [light.texture_index as u32; 4],
             pos: light.pos.extend(0.0).into(),
+            shadow_bias_min_max: light.shadow_bias_min_max.into(),
             view_proj: light.view_proj.to_cols_array_2d(),
+            ..Default::default()
         };
 
         directional_lights.push(directional_light);
@@ -258,6 +264,7 @@ impl<L: Light> Node for LightsNode<L> {
 
                             shadow_light.pos = global_transform.translation;
                             shadow_light.view_proj = view_proj;
+                            shadow_light.shadow_bias_min_max = light.shadow_bias_min_max(config);
 
                             let staging_buffer =
                                 if let Some(staging_buffer) = shadow_light.staging_buffer {

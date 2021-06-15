@@ -52,6 +52,8 @@ struct DirectionalLight {
 struct ShadowDirectionalLight {
     uint textureIndex;
     vec3 pos;
+    vec2 shadow_bias_min_max;
+    vec2 _padding;
     mat4 viewProj;
 };
 
@@ -453,7 +455,10 @@ void main() {
             sampler2DArray(DirectionalLightTexture, DirectionalLightSampler), 
             vec3(uv, shadow_light.textureIndex)
         ).r;
-        float shadow_bias = max(0.00015 * (1.0 - dot(v_WorldNormal, DirectionalLights[i].direction.xyz)), 0.00001);
+        float shadow_bias = max(
+            shadow_light.shadow_bias_min_max.y * (1.0 - dot(v_WorldNormal, DirectionalLights[i].direction.xyz)),
+            shadow_light.shadow_bias_min_max.x
+        );
         // Clamping the light space z to the shadow map range prevents objects further away than the far plane
         // from always being considered as occluded
         if (clamp(p.z, 0.0, 1.0 + shadow_bias) - shadow_bias <= depth
