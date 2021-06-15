@@ -101,6 +101,7 @@ fn setup(
         })
         .insert(CameraState::default())
         .with_children(|parent| {
+            let half_size = 5.0;
             parent
                 .spawn()
                 .insert(DirectionalLight::new(
@@ -111,7 +112,10 @@ fn setup(
                 .insert(Transform::identity())
                 .insert(GlobalTransform::identity())
                 .insert(ShadowDirectionalLight {
-                    size: 10.0,
+                    left: -half_size,
+                    right: half_size,
+                    bottom: -half_size,
+                    top: half_size,
                     ..Default::default()
                 });
         });

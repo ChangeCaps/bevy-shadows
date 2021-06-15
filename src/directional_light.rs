@@ -2,10 +2,16 @@ use crate::shadow_pass_node::*;
 use bevy::prelude::*;
 use bevy::render::camera::{CameraProjection, OrthographicProjection};
 
+const HALF_SIZE: f32 = 25.0;
 pub struct ShadowDirectionalLight {
-    /// Size of the area covered by the light.
-    /// Everything outside will be lit by default.
-    pub size: f32,
+    /// Left plane of projection.
+    pub left: f32,
+    /// Right plane of projection.
+    pub right: f32,
+    /// Bottom plane of projection.
+    pub bottom: f32,
+    /// Top plane of projection.
+    pub top: f32,
     /// Near plane of projection.
     pub near: f32,
     /// Far plane of projection.
@@ -15,9 +21,12 @@ pub struct ShadowDirectionalLight {
 impl Default for ShadowDirectionalLight {
     fn default() -> Self {
         Self {
-            size: 50.0,
-            near: -500.0,
-            far: 500.0,
+            left: -HALF_SIZE,
+            right: HALF_SIZE,
+            bottom: -HALF_SIZE,
+            top: HALF_SIZE,
+            near: -20.0 * HALF_SIZE,
+            far: 20.0 * HALF_SIZE,
         }
     }
 }
@@ -26,15 +35,18 @@ impl Light for DirectionalLight {
     type Config = ShadowDirectionalLight;
 
     fn proj_matrix(&self, config: Option<&Self::Config>) -> Mat4 {
-        let d = config.map_or(25.0, |config| config.size / 2.0);
-        let near = config.map_or(-500.0, |config| config.near);
-        let far = config.map_or(500.0, |config| config.far);
+        let left = config.map_or(-HALF_SIZE, |config| config.left);
+        let right = config.map_or(HALF_SIZE, |config| config.right);
+        let bottom = config.map_or(-HALF_SIZE, |config| config.bottom);
+        let top = config.map_or(HALF_SIZE, |config| config.top);
+        let near = config.map_or(-20.0 * HALF_SIZE, |config| config.near);
+        let far = config.map_or(20.0 * HALF_SIZE, |config| config.far);
 
         OrthographicProjection {
-            left: -d,
-            right: d,
-            bottom: -d,
-            top: d,
+            left,
+            right,
+            bottom,
+            top,
             far,
             near,
             ..Default::default()
